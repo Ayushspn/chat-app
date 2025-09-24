@@ -10,6 +10,7 @@ function App() {
 
   useEffect(() => {
     socket.on('receive_message', (data) => {
+      console.log(data)
       setChatLog((prev) => [...prev, data]);
     });
   }, []);
