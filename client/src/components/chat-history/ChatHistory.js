@@ -49,11 +49,11 @@ const ChatHistory = () => {
 };
 
 const styles = {
-  container: { padding: '20px', fontFamily: 'Arial, sans-serif' },
+  container: { padding: '20px', fontFamily: 'Arial, sans-serif', width: '60%' },
   chatBox: {
     border: '1px solid #ccc',
     padding: '10px',
-    height: '400px',
+    maxHeight: '80vh',
     overflowY: 'scroll',
     backgroundColor: '#f9f9f9',
   },

@@ -12,9 +12,9 @@ function App() {
   // }, []);
 
   return (
-    <div>
-      <ChatHistory/>
-      <Chat />
+    <div className="App" style={{ display: 'flex'}}>
+      <ChatHistory style={{ flex: 1, width: '50vw' }} />
+      <Chat style={{ flex: 2 }} />
     </div>
   );
 }
