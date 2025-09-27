@@ -9,6 +9,7 @@ const Message = require('./models/Message');
 const messagesRoute = require('./routes/messages');
 const loginRoutes = require('./routes/auth/login');
 const registrationRoutes = require('./routes/auth/registration');
+const userRoutes = require('./routes/users');
 const PORT = process.env.PORT;
 const app = express();
 
@@ -18,6 +19,8 @@ app.use(cors());
 app.use('/messages', messagesRoute);
 app.use('/auth', loginRoutes);
 app.use('/auth', registrationRoutes);
+app.use('/users', userRoutes);
+
 
 mongoose.connect('mongodb://localhost:27017/chat-app', {
   useNewUrlParser: true,

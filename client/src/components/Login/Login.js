@@ -25,7 +25,8 @@ const Login = () => {
     mutationFn: loginUser,
     onSuccess: (data) => {
       setMessage(data.message);
-      // You can store token in localStorage or context here
+      localStorage.setItem('token', data.token);
+      setForm({ email: '', password: '' });
       console.log('Token:', data.token);
     },
     onError: (error) => {

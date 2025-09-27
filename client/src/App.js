@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ChatHistory from './components/chat-history/ChatHistory';
 import Register from './components/Registration/Registration';
 import Login from './components/Login/Login';
+import UserList from './components/UserList/UserList';
 function App() {
   //  const [chatLog, setChatLog] = useState([]);
 
@@ -19,6 +20,7 @@ function App() {
       <Chat style={{ flex: 2 }} /> */}
       <Register></Register>
       <Login></Login>
+      <UserList></UserList>
     </div>
   );
 }
