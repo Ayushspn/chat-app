@@ -1,6 +1,8 @@
 import Chat from './components/chat/Chat';
 import React, { useState, useEffect } from 'react';
 import ChatHistory from './components/chat-history/ChatHistory';
+import Register from './components/Registration/Registration';
+import Login from './components/Login/Login';
 function App() {
   //  const [chatLog, setChatLog] = useState([]);
 
@@ -13,8 +15,10 @@ function App() {
 
   return (
     <div className="App" style={{ display: 'flex'}}>
-      <ChatHistory style={{ flex: 1, width: '50vw' }} />
-      <Chat style={{ flex: 2 }} />
+      {/* <ChatHistory style={{ flex: 1, width: '50vw' }} />
+      <Chat style={{ flex: 2 }} /> */}
+      <Register></Register>
+      <Login></Login>
     </div>
   );
 }
