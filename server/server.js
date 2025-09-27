@@ -5,9 +5,13 @@ const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const Message = require('./models/Message');
-
+const messagesRoute = require('./routes/messages');
 const app = express();
+
+app.use(express.json());
 app.use(cors());
+
+app.use('/messages', messagesRoute);
 
 mongoose.connect('mongodb://localhost:27017/chat-app', {
   useNewUrlParser: true,
