@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import './login.css';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const loginUser = async (formData) => {
     const res = await fetch('http://localhost:5000/auth/login', {
@@ -27,7 +29,7 @@ const Login = () => {
       setMessage(data.message);
       localStorage.setItem('token', data.token);
       setForm({ email: '', password: '' });
-      console.log('Token:', data.token);
+      navigate('/user-list');
     },
     onError: (error) => {
       setMessage(error.message);

@@ -1,10 +1,11 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import parsejwt from '../../utils/parsejwt';
+import parseJwt from '../../utils/parseJwt';
+import './UserList.css';
 const UserList = () => {
   const token = localStorage.getItem('token');
  
-  const currentUserId = parsejwt(token).userId;
+  const currentUserId = parseJwt(token).userId;
 
   const { data: users, isLoading, isError } = useQuery({
     queryKey: ['users', currentUserId],
