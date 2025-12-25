@@ -7,6 +7,7 @@ function Chat() {
   const [chatLog, setChatLog] = useState([]);
 
   useEffect(() => {
+    console.log('Chat component mounted');
     socket.on('receive_message', (data) => {
       setChatLog((prev) => [...prev, data]);
     });
