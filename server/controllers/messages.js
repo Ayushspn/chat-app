@@ -13,4 +13,15 @@ router.get('/messages', async (req, res) => {
   }
 });
 
+router.post('/messages', async (req, res) => {
+  try {
+    console.log('Creating message with data:', req.body);
+    const newMessage = new Message(req.body);
+    await newMessage.save();
+    res.status(201).json(newMessage);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create message' });
+  }
+});
+
 module.exports = router;
