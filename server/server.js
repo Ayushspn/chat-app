@@ -36,56 +36,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: 'http://localhost:3000' }
 });
-
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-
-  // join a room
-  socket.on('join_room', (roomId) => {
-    socket.join(roomId);
-  });
-
-  socket.on('send_message', async (data) => {
-    // data: { roomId, text, senderId }
-    console.log('Message received:', data);
-
-    try {
-      // save message into ChatRoom.messages array
-      const ChatRoom = require('./models/ChatRoom');
-      const { roomId, text, senderId } = data;
-
-      const room = await ChatRoom.findOne({ roomId });
-
-      if (room) {
-        const msgObj = { sender: senderId, text, timestamp: new Date() };
-        room.messages.push(msgObj);
-        room.lastMessage = undefined; // optional: keep lastMessage ref in sync if you use Message model
-        await room.save();
-
-        // broadcast to room
-        io.to(roomId).emit('receive_message', { roomId, message: msgObj });
-      } else {
-        // create a new room from the deterministic roomId (e.g. "user1:user2")
-        const parts = typeof roomId === 'string' ? roomId.split(':').filter(Boolean) : [];
-        const participants = parts.length
-          ? parts.map(id => mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id)
-          : [ mongoose.Types.ObjectId.isValid(senderId) ? new mongoose.Types.ObjectId(senderId) : senderId ];
-
-        const newRoom = new ChatRoom({ roomId, participants, messages: [{ sender: senderId, text, timestamp: new Date() }] });
-        console.log('Creating new room for message:', newRoom);
-        await newRoom.save();
-
-        // emit the saved message (the first message) to the room
-        io.to(roomId).emit('receive_message', { roomId, message: newRoom.messages[newRoom.messages.length - 1] });
-      }
-    } catch (err) {
-      console.error('Error saving message to room', err);
-    }
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-});
+// Register socket handlers
+const registerSocketHandlers = require('./socketHandlers');
+registerSocketHandlers(io);
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
