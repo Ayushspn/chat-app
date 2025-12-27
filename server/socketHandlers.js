@@ -31,8 +31,8 @@ module.exports = function registerSocketHandlers(io) {
 
         // create a new room from the deterministic roomId (e.g. "user1:user2")
         const parts = typeof roomId === 'string' ? roomId.split(':').filter(Boolean) : [];
-const toId = id => mongoose.Types.ObjectId.isValid(id) ? mongoose.Types.ObjectId(id) : id;
-const participants = parts.length ? parts.map(toId) : [ toId(senderId) ];
+        const toId = id => mongoose.Types.ObjectId.isValid(id) ? mongoose.Types.ObjectId(id) : id;
+        const participants = parts.length ? parts.map(toId) : [ toId(senderId) ];
 
         const newRoom = new ChatRoom({
           roomId,

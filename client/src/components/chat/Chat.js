@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import io from 'socket.io-client';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import parseJwt from '../../utils/parseJwt';
@@ -7,6 +7,7 @@ function Chat() {
   const [message, setMessage] = useState('');
   const [chatLog, setChatLog] = useState([]);
   const [isChatStarted, setIsChatStarted] = useState(false);
+  const [previousData, setPreviousData] = useState(null);
 
   const { userId: routeParam } = useParams(); // routeParam may contain a roomId
   const navigate = useNavigate();
@@ -22,7 +23,6 @@ function Chat() {
       console.log('Message received:', data);
       setChatLog((prev) => [...prev, data]);
     });
-
     // If a room id is present in the URL, join that room automatically
     if (routeParam) {
       socket.on('connect', () => console.log('socket connected', socket.id));
@@ -37,6 +37,26 @@ function Chat() {
       }
     };
   }, [routeParam, currentUserId]);
+
+  useEffect(() => {
+    const handleNewMessage = async () => {
+      if (!routeParam) return;
+      try {
+        const res = await fetch(`http://localhost:5000/chatrooms/${routeParam}`, {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        });
+        if (!res.ok) throw new Error('Failed to fetch room');
+        const data = await res.json();
+        console.log('New message event detected', data);
+        setPreviousData(data);
+      } catch (err) {
+        console.error('Error fetching room data:', err);
+      }
+    };
+    handleNewMessage();
+  }, [routeParam, token]);
 
   const sendMessage = () => {
     const roomId = routeParam; // send to current room (roomId stored in URL)
@@ -61,13 +81,13 @@ function Chat() {
       const otherUserId = location.state?.userId;
       const participants = otherUserId ? [currentUserId, otherUserId] : [currentUserId];
 
-      const res = await fetch('http://localhost:5000/rooms', {
+      const res = await fetch('http://localhost:5000/chatrooms', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: token ? `Bearer ${token}` : undefined,
         },
-        body: JSON.stringify({ participants }),
+        body: JSON.stringify({ otherUserId: currentUserId === otherUserId ? null : otherUserId }),
       });
 
       if (!res.ok) throw new Error('Failed to create room');
@@ -95,6 +115,13 @@ function Chat() {
         placeholder="Type message..."
       />
       <button onClick={sendMessage}>Send</button>
+      <div className="chat-log">
+        {previousData && previousData?.messages.map((msg, index) => (
+          <div key={index}> 
+            <strong>{msg.senderId === currentUserId ? 'You' : msg.senderId}:</strong> {msg.text}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
