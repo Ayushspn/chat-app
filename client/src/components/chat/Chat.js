@@ -59,8 +59,8 @@ function Chat() {
   }, [routeParam, token]);
 
   const sendMessage = () => {
-    const roomId = routeParam; // send to current room (roomId stored in URL)
-    socket.emit('send_message', { text: message, roomId });
+    const selectedUserId = routeParam; // send to current room (roomId stored in URL)
+    socket.emit('send_message', { text: message, selectedUserId, token });
     setMessage('');
     window.dispatchEvent(new Event('new-message'));
   };

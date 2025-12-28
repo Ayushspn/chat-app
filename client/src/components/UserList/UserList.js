@@ -24,6 +24,7 @@ const UserList = () => {
   const StartChat = async (selectedUserId) => {
     if (creatingRoom) return;
     setCreatingRoom(true);
+    console.log('Starting chat with user:', selectedUserId);
     try {
       // Try to create or get existing room from backend
       const res = await fetch('http://localhost:5000/rooms', {
@@ -38,7 +39,7 @@ const UserList = () => {
       if (!res.ok) throw new Error('Failed to create room');
       const { roomId } = await res.json();
       // navigate to chat route with created room id
-      navigate(`/chat/${roomId}`);
+      navigate(`/chat/${selectedUserId}`);
     } catch (err) {
       console.error('StartChat error', err);
       // fallback: navigate to chat with user id if server isn't available
