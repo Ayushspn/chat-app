@@ -17,7 +17,7 @@ const getUserIdFromToken = (token) => {
 };
 
 module.exports = function registerSocketHandlers(io) {
-  io.on('connection', (socket) => {
+    io.on('connection', (socket) => {
     // join a room
     socket.on('join_room', (roomId) => {
       socket.join(roomId);

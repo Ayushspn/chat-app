@@ -6,6 +6,7 @@ import './login.css';
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
   const navigate = useNavigate();
 
   const loginUser = async (formData) => {
@@ -27,12 +28,14 @@ const Login = () => {
     mutationFn: loginUser,
     onSuccess: (data) => {
       setMessage(data.message);
+      setMessageType('success');
       localStorage.setItem('token', data.token);
       setForm({ email: '', password: '' });
-      navigate('/user-list');
+      setTimeout(() => navigate('/user-list'), 1500);
     },
     onError: (error) => {
       setMessage(error.message);
+      setMessageType('error');
     },
   });
 
@@ -48,31 +51,41 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <h2 className="login-title">Login</h2>
-      <form onSubmit={handleSubmit} className="login-form">
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className="login-input"
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          className="login-input"
-          required
-        />
-        <button type="submit" className="login-button" disabled={mutation.isPending}>
-          {mutation.isPending ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-      {message && <div className="login-message">{message}</div>}
+      <div className="login-form-wrapper">
+        <h2 className="login-title">Welcome Back</h2>
+        <p className="login-subtitle">Sign in to your account</p>
+        <form onSubmit={handleSubmit} className="login-form">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            value={form.email}
+            onChange={handleChange}
+            className="login-input"
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            className="login-input"
+            required
+          />
+          <button type="submit" className="login-button" disabled={mutation.isPending}>
+            {mutation.isPending ? 'Signing in...' : 'Login'}
+          </button>
+        </form>
+        {message && (
+          <div className={`login-message ${messageType}`}>
+            {message}
+          </div>
+        )}
+        <div className="login-footer">
+          Don't have an account? <a href="/register">Register here</a>
+        </div>
+      </div>
     </div>
   );
 };

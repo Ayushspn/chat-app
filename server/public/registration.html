@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register — Chat App</title>
+  <link rel="stylesheet" href="/styles/registration.css">
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <div class="brand">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="24" height="24" rx="6" fill="#6C63FF" />
+          <path d="M7 14l3-3 2 2 5-5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h1>Chat App</h1>
+      </div>
+
+      <form class="form" action="/auth/registration" method="POST">
+        <h2>Create your account</h2>
+
+        <label class="field">
+          <span class="label">Name</span>
+          <input name="name" type="text" placeholder="Your name" required />
+        </label>
+
+        <label class="field">
+          <span class="label">Email</span>
+          <input name="email" type="email" placeholder="you@example.com" required />
+        </label>
+
+        <label class="field">
+          <span class="label">Password</span>
+          <input name="password" type="password" placeholder="Create a password" minlength="6" required />
+        </label>
+
+        <button class="btn" type="submit">Create account</button>
+
+        <p class="muted">Already have an account? <a href="/login">Sign in</a></p>
+      </form>
+
+    </section>
+  </main>
+</body>
+</html>

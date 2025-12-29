@@ -1,23 +1,6 @@
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+/* Common Auth Form Styles */
 
-.login-form-wrapper {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 50px 40px;
-  width: 100%;
-  max-width: 420px;
-  animation: slideUp 0.5s ease-out;
-}
-
+/* Animations */
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -29,7 +12,41 @@
   }
 }
 
-.login-title {
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Container */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Form Wrapper */
+.auth-form-wrapper {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 420px;
+  animation: slideUp 0.5s ease-out;
+}
+
+/* Title */
+.auth-title {
   font-size: 32px;
   font-weight: 700;
   color: #333;
@@ -38,7 +55,8 @@
   letter-spacing: -0.5px;
 }
 
-.login-subtitle {
+/* Subtitle */
+.auth-subtitle {
   font-size: 14px;
   color: #999;
   text-align: center;
@@ -46,13 +64,15 @@
   font-weight: 400;
 }
 
-.login-form {
+/* Form */
+.auth-form {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
-.login-input {
+/* Input Fields */
+.auth-input {
   padding: 14px 18px;
   border: 2px solid #e0e0e0;
   border-radius: 10px;
@@ -63,23 +83,24 @@
   color: #333;
 }
 
-.login-input::placeholder {
+.auth-input::placeholder {
   color: #aaa;
   font-weight: 400;
 }
 
-.login-input:focus {
+.auth-input:focus {
   outline: none;
   border-color: #667eea;
   background-color: white;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.login-input:hover {
+.auth-input:hover {
   border-color: #d0d0d0;
 }
 
-.login-button {
+/* Button */
+.auth-button {
   padding: 14px 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -94,21 +115,22 @@
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.login-button:hover:not(:disabled) {
+.auth-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
-.login-button:active:not(:disabled) {
+.auth-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.login-button:disabled {
+.auth-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.login-message {
+/* Messages */
+.auth-message {
   margin-top: 20px;
   padding: 14px 18px;
   border-radius: 10px;
@@ -118,60 +140,50 @@
   animation: slideDown 0.3s ease-out;
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.login-message.success {
+.auth-message.success {
   background-color: #d4edda;
   color: #155724;
   border: 1px solid #c3e6cb;
 }
 
-.login-message.error {
+.auth-message.error {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
 }
 
-.login-footer {
+/* Footer */
+.auth-footer {
   margin-top: 25px;
   text-align: center;
   font-size: 14px;
   color: #666;
 }
 
-.login-footer a {
+.auth-footer a {
   color: #667eea;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
-.login-footer a:hover {
+.auth-footer a:hover {
   color: #764ba2;
   text-decoration: underline;
 }
 
 /* Responsive Design */
 @media (max-width: 480px) {
-  .login-form-wrapper {
+  .auth-form-wrapper {
     padding: 40px 25px;
   }
 
-  .login-title {
+  .auth-title {
     font-size: 28px;
   }
 
-  .login-input,
-  .login-button {
+  .auth-input,
+  .auth-button {
     padding: 12px 16px;
     font-size: 14px;
   }

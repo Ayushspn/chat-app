@@ -1,6 +1,7 @@
 // server.js
 const express = require('express');
 const http = require('http');
+const path = require('path');
 require('dotenv').config();
 const { Server } = require('socket.io');
 const mongoose = require('mongoose');
@@ -16,6 +17,14 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+// Serve static frontend files (registration page, CSS, client scripts)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Simple route to the registration page
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'registration.html'));
+});
 
 app.use('/messages', messagesRoute);
 app.use('/chatrooms', chatroomsRoute);

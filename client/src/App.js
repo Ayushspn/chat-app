@@ -11,6 +11,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Registration />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/user-list" element={<UserList />} />
         <Route path="/chat/:userId" element={<Chat />} />
         {/* <Route path="*" element={<NotFound />} /> */}
