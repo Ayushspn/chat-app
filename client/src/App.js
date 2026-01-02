@@ -5,21 +5,27 @@ import Registration from './components/Registration/Registration';
 import UserList from './components/UserList/UserList';
 import Chat from './components/chat/Chat';
 import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
 // auth is handled via `useAuth` hook directly (no context/provider)
 
 const App = () => {
   return (
-    <Router>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Registration />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/user-list" element={<UserList />} />
-        <Route path="/chat/:userId" element={<Chat />} />
-        {/* <Route path="*" element={<NotFound />} /> */}
-      </Routes>
-    </Router>
+    <div className="app-shell">
+      <Router>
+        <Header />
+        <main className="app-body">
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/register" element={<Registration />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/user-list" element={<UserList />} />
+            <Route path="/chat/:userId" element={<Chat />} />
+            {/* <Route path="*" element={<NotFound />} /> */}
+          </Routes>
+        </main>
+      </Router>
+      <Footer />
+    </div>
   );
 };
 

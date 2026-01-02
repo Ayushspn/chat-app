@@ -10,6 +10,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Layout: make header/footer fixed in flow, only .app-body scrolls */
+html, body, #root {
+  height: 100%;
+}
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.app-body {
+  flex: 1 1 auto;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

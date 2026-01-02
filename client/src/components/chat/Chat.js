@@ -1,19 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import io from 'socket.io-client';
+import useSocket from '../../hooks/useSocket';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import parseJwt from '../../utils/parseJwt';
 import './Chat.css';
-import { API_BASE, SOCKET_URL } from '../../config';
+import { API_BASE } from '../../config';
 
-const socket = io(SOCKET_URL);
+
 
 function Chat() {
+  const { socket, on, off, emit, emitWithAck, joinRoom, leaveRoom, connected } = useSocket();
   const [message, setMessage] = useState('');
   const [chatLog, setChatLog] = useState([]);
   const [isChatStarted, setIsChatStarted] = useState(false);
   const [previousData, setPreviousData] = useState(null);
   const [recipientName, setRecipientName] = useState('');
+  const [isRecipientTyping, setIsRecipientTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+  const localTypingRef = useRef(false);
 
   const { userId: routeParam } = useParams();
   const navigate = useNavigate();
@@ -30,20 +34,46 @@ function Chat() {
   }, [chatLog, previousData]);
 
   useEffect(() => {
-    socket.on('receive_message', (data) => {
-      console.log('Message received:', data);
+    // incoming messages
+    on('receive_message', (data) => {
       setChatLog((prev) => [...prev, data]);
     });
 
+    // typing events from other user
+    const handleTyping = (data) => {
+      if (data.userId === currentUserId) return;
+      setIsRecipientTyping(true);
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => setIsRecipientTyping(false), 2500);
+    };
+    on('typing', handleTyping);
+
+    // message status updates (delivered/read)
+    const handleStatus = (statusUpdate) => {
+      setChatLog((prev) => prev.map((m) => {
+        if (!m) return m;
+        if (statusUpdate.tempId && m.tempId === statusUpdate.tempId) {
+          return { ...m, status: statusUpdate.status, serverId: statusUpdate.messageId || m.serverId };
+        }
+        if (statusUpdate.serverId && m.serverId === statusUpdate.serverId) {
+          return { ...m, status: statusUpdate.status };
+        }
+        return m;
+      }));
+    };
+    on('message_status', handleStatus);
+
     if (routeParam) {
-      socket.on('connect', () => console.log('socket connected', socket.id));
+      on('connect', () => console.log('socket connected', socket.id));
       setIsChatStarted(true);
     }
 
     return () => {
-      socket.off('receive_message');
+      off('receive_message');
+      off('typing', handleTyping);
+      off('message_status', handleStatus);
       if (routeParam) {
-        socket.emit('leave_room', { roomId: routeParam, userId: currentUserId });
+        emit('leave_room', { roomId: routeParam, userId: currentUserId });
       }
     };
   }, [routeParam, currentUserId]);
@@ -85,20 +115,33 @@ function Chat() {
 
   const sendMessage = () => {
     if (!message.trim()) return;
-    
     const selectedUserId = routeParam;
-    socket.emit('send_message', { text: message, selectedUserId, token });
-    
-    // Add message to local chat log immediately
-    setChatLog((prev) => [...prev, { text: message, sender: currentUserId }]);
+
+    // optimistic message object with temporary id and status
+    const tempId = `tmp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const localMsg = { tempId, text: message, sender: currentUserId, status: 'sending', createdAt: Date.now() };
+    setChatLog((prev) => [...prev, localMsg]);
     setMessage('');
     window.dispatchEvent(new Event('new-message'));
+
+    // emit with ack — server should return { ok: true, messageId }
+    emitWithAck('send_message', { text: localMsg.text, selectedUserId, token, tempId })
+      .then((res) => {
+        if (res && res.ok) {
+          setChatLog((prev) => prev.map((m) => (m.tempId === tempId ? { ...m, status: 'sent', serverId: res.messageId } : m)));
+        } else {
+          setChatLog((prev) => prev.map((m) => (m.tempId === tempId ? { ...m, status: 'failed' } : m)));
+        }
+      })
+      .catch(() => {
+        setChatLog((prev) => prev.map((m) => (m.tempId === tempId ? { ...m, status: 'failed' } : m)));
+      });
   };
 
   const startChat = async () => {
     try {
       if (routeParam) {
-        socket.emit('join_room', { roomId: routeParam, userId: currentUserId });
+        joinRoom(routeParam, currentUserId);
         return;
       }
 
@@ -116,11 +159,27 @@ function Chat() {
       const { roomId } = await res.json();
 
       navigate(`/chat/${roomId}`, { replace: true });
-      socket.emit('join_room', { roomId, userId: currentUserId });
+      joinRoom(roomId, currentUserId);
     } catch (err) {
       console.error('Failed to start chat', err);
       setIsChatStarted(false);
     }
+  };
+
+  const handleInputChange = (e) => {
+    const v = e.target.value;
+    setMessage(v);
+    if (!routeParam) return;
+    // send typing event (debounced)
+    if (!localTypingRef.current) {
+      emit('typing', { roomId: routeParam, userId: currentUserId });
+      localTypingRef.current = true;
+    }
+    clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      localTypingRef.current = false;
+      emit('stop_typing', { roomId: routeParam, userId: currentUserId });
+    }, 1500);
   };
 
   const handleKeyPress = (e) => {
@@ -136,7 +195,7 @@ function Chat() {
         <div className="chat-header">
           <div className="chat-info">
             <div className="chat-recipient">{recipientName || 'Chat'}</div>
-            <div className="chat-status">{isChatStarted ? 'Active' : 'Offline'}</div>
+            <div className="chat-status">{isChatStarted ? (isRecipientTyping ? 'typing...' : (connected ? 'Active' : 'Connecting...')) : 'Offline'}</div>
           </div>
           {!isChatStarted && (
             <button className="start-chat-button" onClick={startChat}>
@@ -163,7 +222,11 @@ function Chat() {
                       <div className="message-sender">
                         {isSent ? 'You' : 'Recipient'}
                       </div>
-                      <div className="message-bubble">{msg.text}</div>
+                      <div className="message-bubble">{msg.text}
+                        {isSent && msg.status && (
+                          <div className="message-status">{msg.status}</div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -200,7 +263,7 @@ function Chat() {
                 type="text"
                 className="chat-input"
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
               />
