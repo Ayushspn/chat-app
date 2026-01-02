@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/chat-app', {
+const MONGO_URI = process.env.REACT_APP_MONGO_URI || 'mongodb://localhost:27017/chat-app';
+
+mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

@@ -3,8 +3,9 @@ import io from 'socket.io-client';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import parseJwt from '../../utils/parseJwt';
 import './Chat.css';
+import { API_BASE, SOCKET_URL } from '../../config';
 
-const socket = io('http://localhost:5000');
+const socket = io(SOCKET_URL);
 
 function Chat() {
   const [message, setMessage] = useState('');
@@ -29,9 +30,6 @@ function Chat() {
   }, [chatLog, previousData]);
 
   useEffect(() => {
-    console.log('Chat component mounted');
-    console.log('Current User ID:', routeParam);
-    
     socket.on('receive_message', (data) => {
       console.log('Message received:', data);
       setChatLog((prev) => [...prev, data]);
@@ -54,7 +52,7 @@ function Chat() {
     const handleNewMessage = async () => {
       if (!routeParam) return;
       try {
-        const res = await fetch(`http://localhost:5000/chatrooms/${routeParam}`, {
+        const res = await fetch(`${API_BASE}/chatrooms/${routeParam}`, {
           headers: {
             Authorization: token ? `Bearer ${token}` : undefined,
           },
@@ -105,7 +103,7 @@ function Chat() {
       }
 
       const otherUserId = location.state?.userId;
-      const res = await fetch('http://localhost:5000/chatrooms', {
+      const res = await fetch(`${API_BASE}/chatrooms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

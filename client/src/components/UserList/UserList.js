@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import parseJwt from '../../utils/parseJwt';
 import './UserList.css';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE } from '../../config';
 
 const UserList = () => {
   const token = localStorage.getItem('token');
@@ -14,7 +15,7 @@ const UserList = () => {
   const { data: users, isLoading, isError } = useQuery({
     queryKey: ['users', currentUserId],
     queryFn: async () => {
-      const res = await fetch(`http://localhost:5000/users/${currentUserId}`);
+      const res = await fetch(`${API_BASE}/users/${currentUserId}`);
       const users = await res.json();
       return users;
     },
@@ -55,7 +56,7 @@ const UserList = () => {
     console.log('Starting chat with user:', selectedUserId);
     try {
       // Try to create or get existing room from backend
-      const res = await fetch('http://localhost:5000/rooms', {
+      const res = await fetch(`${API_BASE}/rooms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

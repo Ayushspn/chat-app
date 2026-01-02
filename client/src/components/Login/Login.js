@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
+import { API_BASE } from '../../config';
+import useAuth from '../../hooks/useAuth';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -10,7 +12,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const loginUser = async (formData) => {
-    const res = await fetch('http://localhost:5000/auth/login', {
+    const res = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
@@ -24,14 +26,16 @@ const Login = () => {
     return res.json();
   };
 
+  const { login: loginContext } = useAuth();
+
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
       setMessage(data.message);
       setMessageType('success');
-      localStorage.setItem('token', data.token);
+      loginContext(data.token);
       setForm({ email: '', password: '' });
-      setTimeout(() => navigate('/user-list'), 1500);
+      navigate('/user-list')
     },
     onError: (error) => {
       setMessage(error.message);

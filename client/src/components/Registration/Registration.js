@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import './Registration.css';
+import { API_BASE } from '../../config';
 
 const Register = () => {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
@@ -8,7 +9,7 @@ const Register = () => {
   const [messageType, setMessageType] = useState('');
 
   const registerUser = async (formData) => {
-    const res = await fetch('http://localhost:5000/auth/register', {
+    const res = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),

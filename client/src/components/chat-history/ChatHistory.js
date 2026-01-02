@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { API_BASE } from '../../config';
 // import axios from 'axios';
 
 const fetchMessages = async () => {
-  const res = await fetch('http://localhost:5000/messages');
+  const res = await fetch(`${API_BASE}/messages`);
   const messages = await res.json();
   return messages
 };
